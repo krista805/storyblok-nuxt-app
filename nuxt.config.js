@@ -1,3 +1,5 @@
+const pkg = require("./package");
+const axios = require('axios');
 
 export default {
   mode: 'universal',
@@ -39,10 +41,35 @@ export default {
   ** Nuxt.js modules
   */
   modules: [
-    ['storyblok-nuxt', 
-      {accessToken: 'WUyzdw2qu25aZuSowK8s6wtt', cacheProvider: "memory" }
+    ['storyblok-nuxt',
+      // preview token: WUyzdw2qu25aZuSowK8s6wtt
+      {accessToken: process.env.NODE_ENV == 'production' 
+        ? 'osB49rBxot9DcHJHDKNwrAtt'
+        : 'WUyzdw2qu25aZuSowK8s6wtt'
+        , cacheProvider: "memory" }
     ]
   ],
+  // fetch content dynamically when building into dist folder. Sepcify which routes should be generated
+  generate: {
+    routes: function() {
+      // want to fetch routes from storyblok. must make http request
+      return axios.get('https://api.storyblok.com/v1/cdn/stories?&version=published&token=osB49rBxot9DcHJHDKNwrAtt&starts_with=blog&cv=' + Math.floor(Date.now() / 1e3)
+      )
+      .then(res => {
+        const blogPosts = res.data.stories.map(bp => bp.full_slug);
+        return [
+          '/',
+          '/blog',
+          '/about',
+          ...blogPosts
+        ]
+      });
+    }
+  },
+
+  axios: {
+    
+  },
   /*
   ** Build configuration
   */
