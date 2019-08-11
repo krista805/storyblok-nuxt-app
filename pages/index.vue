@@ -19,25 +19,48 @@ export default {
     PostPreview
   },
 
-  data() {
-    return {
-      posts : [
-        { 
-          title: "A New Beginning",
-          previewText: "This will be awesome, don\t miss it!",
-          thumbnailUrl: "https://www.agency73.com/wp-content/uploads/2018/10/agenda-concept-development.jpeg",
-          id: "a-new-beginning"
-        },
-        { 
-          title: "A Second Beginning",
-          previewText: "This will be awesome, don\t miss it!",
-          thumbnailUrl: "https://www.agency73.com/wp-content/uploads/2018/10/agenda-concept-development.jpeg",
-          id: "a-second-beginning"
-        },        
-
-      ]
-    }
+  // Fetch and populates data of our component both on the server and the client
+  asyncData(context) {
+    return context.app.$storyapi
+    .get("cdn/stories", {
+      version: "draft",
+      starts_with: 'blog/'
+    })
+    .then(res => {
+      console.log(res);
+      return { 
+        posts: res.data.stories.map(bp => {
+          return {
+            id: bp.slug,
+            title: bp.content.title ,
+            previewText: bp.content.summary,
+            thumbnailUrl: bp.content.thumbnail
+          };
+        })
+      };
+    })
   }
+
+
+  // data() {
+  //   return {
+  //     posts : [
+  //       { 
+  //         title: "A New Beginning",
+  //         previewText: "This will be awesome, don\t miss it!",
+  //         thumbnailUrl: "https://www.agency73.com/wp-content/uploads/2018/10/agenda-concept-development.jpeg",
+  //         id: "a-new-beginning"
+  //       },
+  //       { 
+  //         title: "A Second Beginning",
+  //         previewText: "This will be awesome, don\t miss it!",
+  //         thumbnailUrl: "https://www.agency73.com/wp-content/uploads/2018/10/agenda-concept-development.jpeg",
+  //         id: "a-second-beginning"
+  //       },        
+
+  //     ]
+  //   }
+  // }
 }
 </script>
 
