@@ -13,7 +13,9 @@
 export default {
     asyncData(context) {
         return context.app.$storyapi.get('cdn/stories/blog/' + context.params.postId, {
-            version: 'draft'
+            // populated by nuxt that gives access to environment property
+            //  First way to determine environment available. This variable can be used everywhere
+            version: process.env.NODE_ENV == 'production' ? 'published' : 'draft'
         } ).then(res => {
             console.log(res.data);
             return {

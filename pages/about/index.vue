@@ -1,5 +1,5 @@
 <template>
-    <section id="about-page">
+    <section id="about-page" v-editable="blok">
         <h1>{{ title }}</h1>
         <p>{{ content }}</p>
     </section>
@@ -9,14 +9,28 @@
 export default {
     asyncData(context){
         return context.app.$storyapi.get('cdn/stories/about', {
-            version: 'draft'
+            version: context.isDev ? "draft" : "publsihed",
         }).then(res => {
             console.log(res.data)
             return {
+                blok: res.data.story.content,
                 title: res.data.story.content.title,
                 content: res.data.story.content.content
             }
         })
+    },
+    mounted() {
+    // this will initlize our project to be live editable
+    this.$storybridge.on(["input", "published", "change"], event => {
+    if (event.action === "input") {
+        if (event.story.id === this.story.id) {
+        this.story.content = event.story.content;
+        }
+    } else if (!event.slugChanged) {
+        window.location.reload();
+    }
+    });
+
     }
 }
 </script>

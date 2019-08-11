@@ -23,6 +23,7 @@ export default {
   asyncData(context) {
     return context.app.$storyapi
     .get("cdn/stories", {
+        // Second way to determine environment available. Context is only availble is async data when we get the context
       version: context.isDev ? "draft" : "publsihed",
       starts_with: 'blog/'
     })
